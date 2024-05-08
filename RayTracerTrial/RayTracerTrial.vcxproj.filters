@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Data Models">
+      <UniqueIdentifier>{00fd27c8-98af-434d-9989-5d3a1b5ae863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Others">
+      <UniqueIdentifier>{842ffa49-a292-4fa9-94b6-9427eacba0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Models\BVH">
+      <UniqueIdentifier>{f27ad4d4-4e14-4652-bd9d-7276081aa380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{66ffb026-d796-4416-a092-62eaa89acfbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Geometry">
+      <UniqueIdentifier>{5fdb7d79-3a7b-4639-887d-bcac75847f6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\View">
+      <UniqueIdentifier>{aba090f0-5ce1-4c98-9c3c-f8feb85fe7b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLRenderer.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="MyTexture.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ApplicationManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSettings.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Defaults.h">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Defaults.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Eye.cpp">
+      <Filter>Engine\View</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenPlane.cpp">
+      <Filter>Engine\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjLoader.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="BVHNode.cpp">
+      <Filter>Data Models\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Data Models\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="BVH.cpp">
+      <Filter>Data Models\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorUtils.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLRenderer.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTexture.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSettings.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Others</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Eye.h">
+      <Filter>Engine\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenPlane.h">
+      <Filter>Engine\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjLoader.h">
+      <Filter>Others</Filter>
+    </ClInclude>
+    <ClInclude Include="BVHNode.h">
+      <Filter>Data Models\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Data Models\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH.h">
+      <Filter>Data Models\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorUtils.h">
+      <Filter>Others</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
