@@ -1,95 +1,95 @@
-RayTracer
+# RayTracer
 
-Program dokonuje symulacji oświetlenia poprzez raytracing. Zdecydowałem się na ten moment na raytracer czarno-biały, gdyż w ten sposób mogłem prototypować więcej nowych funkcji trochę szybciej, a podzielenie nawet rozwiniętej całości na kanały r-g-b nie wydaje się w przyszłości dużą przeszkodą.
+A simple raytracer application that simulates lighting effects through raytracing. Currently implemented in grayscale mode, allowing rapid prototyping of new features. However, the architecture easily supports future RGB extensions.
 
-Przykładowy cykl życia promienia (mającego początkowo pewien Max Depth):
+---
 
-1. zostaje wyemitowany z pozycji kamery w kierunku zgodnym z jej rotacją / FOV / rozdzielczością obrazu.
+## Ray lifecycle overview (with initial "Max Depth"):
 
-2. algorytm odnajduje (przy użyciu struktur BVH) wszystkie przecięcia promienia z obiektami sceny; 
-	2.a jeśli ich nie ma - zwraca kolor tła; 
-	2.b jeśli są - emitowany jest kolejny promień mający na celu przetestowanie, czy między punktem zderzenia a każdym z kolei źródłem światła istnieje przeszkoda. 
-		2.b.a Jeśli istnieje przeszkoda - nic się nie dzieje i sprawdzane jest następne światło. 
-		2.b.b Jeśli nie istnieje przeszkoda - punktowe wartości diffuse i/lub specular są zwiększane o wyliczoną wartość. 
+1. A ray is emitted from the camera position, oriented according to its rotation, field of view (FOV), and image resolution.
 
-3 Po dojściu do tego momentu;
-	3.a jeżeli MAX DEPTH wynosi w tym momencie <= 1, kończymy; 
-	3.b jeżeli wynosi więcej:
-		- wokół normalnej trójkąta trafionego pierwotnie przez promień emitowane są nowe pochodne promienie dla diffuse (ich ilość to dLayerCount * dRadialCount)
-		- wokół promienia odbitego od normalnej ww. trójkąta emitowane są nowe pochodne promienie dla specular (ich ilość to sLayerCount * sRadialCount)
-		- kolejne promienie przechodzą powyższy proces od punktu drugiego, z ich wartością depth obniżoną o 1.
+2. The algorithm uses Bounding Volume Hierarchies (BVH) to detect intersections between the ray and scene objects:
+   - **If no intersection occurs**, the ray returns the background color.
+   - **If intersections occur**, a shadow ray is emitted from each intersection point toward each scene light source:
+     - **If obstacles block the shadow ray**, no lighting is calculated from that particular light source.
+     - **If the shadow ray is unobstructed**, diffuse and/or specular lighting values at the intersection point are incremented accordingly.
 
-Wejścia:
+3. At this stage:
+   - **If Max Depth ≤ 1**, tracing terminates.
+   - **If Max Depth > 1**, additional rays are emitted:
+     - Diffuse reflection rays are emitted around the intersected surface normal (`faceNormal`). The total number of diffuse rays is `dLayerCount * dRadialCount`.
+     - Specular reflection rays are emitted around the reflection direction from the original intersection point. The total number of specular rays is `sLayerCount * sRadialCount`.
+     - Each subsequent ray undergoes the same process from step 2, with depth reduced by one each time.
 
-Width, Height - rozdzielczość
-Max Depth - maksymalna głębokość, tj. ilość odbić dla promienia.
+---
 
-D/S indirect factor - mnożnik wpływu światła indirect Diffuse/Specular na scenę
-D/S layer count - współczynnik wpływający na ilość pochodnych promieni Diffuse/Specular z danego punktu
-D/S radial count - współczynnik wpływający na ilość pochodnych promieni Diffuse/Specular z danego punktu
+## Input parameters:
 
-Camera pos - pozycja kamery (oś Y w górę)
-Camera rot - obrót kamery (Euler)
+- **Width, Height** – Output resolution (pixels).
+- **Max Depth** – Maximum reflection depth for rays.
+- **Diffuse/Specular indirect factor** – Multipliers controlling the influence of indirect diffuse/specular lighting.
+- **Diffuse/Specular layer count** – Determines how many angular layers are generated for diffuse/specular secondary rays.
+- **Diffuse/Specular radial count** – Determines how many radial rays are emitted per angular layer for diffuse/specular lighting.
 
-Light pos - pozycja danego światła
-Light intensity - intensywność danego światła
+- **Camera position** – Camera's spatial coordinates (Y-axis upwards).
+- **Camera rotation** – Camera orientation (Euler angles).
 
-Material Diffuse - mnożnik wpływu światła diffuse na scenę
-Material Specular - mnożnik wpływu światła specular na scenę
-Material Roughness - wyższy roughness przyjmuje odbite światło z większego zakresu kątów; wpływa też na powstawanie rozmycia odbić jeżeli Max Depth >= 2
+- **Light position** – Spatial position of each light source.
+- **Light intensity** – Brightness intensity of each light source.
 
+- **Material Diffuse** – Influence multiplier for diffuse lighting.
+- **Material Specular** – Influence multiplier for specular reflections.
+- **Material Roughness** – Higher roughness results in reflections from a broader range of angles, creating blurred reflections at `Max Depth ≥ 2`.
 
-Proces generowania promieni pochodnych jest dla diffuse i specular bardzo podobny:
+---
 
-- w przypadku diffuse, wokół faceNormal generowanych jest dRadialCount koncentrycznie odchylonych promieni. Każdy z nich jest odchylony od faceNormal o pewien kąt - ilość obsługiwanych kątów (rozłożonych równomiernie między 5 i 89) to właśnie dLayerCount. Dla przykładu, dla dRadialCount=4 i dLayerCount=5, powinno być wygenerowanych 20 promieni potomnych; 5 z nich będzie odchylonych o 5 stopni od faceNormal, 5 kolejnych o 33 stopni, kolejne o 47, 61 i 89 stopni (te ostatnie będą prawie równoległe ze swoim face'm, co zapewnia że nawet małe wklęsłości zostaną uwzględnione).
+## Secondary Ray Generation:
 
-- w przypadku specular główna różnica to to, że generujemy nie wokół normalnej trójkąta, tylko wokół promienia odbicia naszego promienia macierzystego. W związku z tym rzucają się w oczy pewne problemy, jak np. to, że przy dużym rozchyleniu część promieni będzie skazana na ponowne "uderzenie" w mesh, więc ten aspekt jest na pewno do poprawy.
-Kolejną ważną kwestią związaną z generacją potomnych specular jest roughness - podjąłem pewne ryzyko i uzależniłem maksymalny odchył promieni specular od roughnessu, w celu uzyskania rozmytych odbić. Pomysł okazał się w niektórych przypadkach trafny (efekt widać na niektórych renderach).
+Generation processes for diffuse and specular secondary rays are similar, differing mainly in orientation:
 
+- **Diffuse reflections** are calculated around the surface normal (`faceNormal`). For example, with `dRadialCount = 4` and `dLayerCount = 5`, 20 secondary rays are generated—five rays each at 5°, 33°, 47°, 61°, and 89° angles relative to the normal. This range (5°–89°) ensures detailed capture of small surface indentations.
 
-Urównoleglenie obliczeń przy użyciu openmp pomogło z wydajnością znacząco (CUDA jeszcze nie próbowałem). BVH również bardzo usprawniło proces szczególnie dla dużych meshów.
+- **Specular reflections** are generated around the reflected direction of the original incoming ray, rather than the surface normal. This approach presents certain challenges, such as secondary rays potentially intersecting the originating mesh prematurely, which may require future optimization. Specular ray angle dispersion is tied to material roughness to achieve realistic, blurred reflections—an effect successfully demonstrated in certain renders.
 
-Obciążenie obliczeniowe wzrasta lawinowo wraz ze zwiększaniem max depth. Dla Intela 13900k renderowanie sceny na maxdepth=3 dla rozdzielczości 100x100 potrafi sięgać minut.
+---
 
-Obciążenie jest też tym większe im więcej pikseli na ekranie jest reprezentowanych przez jakieś meshe, oraz im więcej w scenie trisów. BVH są tworzone pod kazdy mesh osobno więc dla dwóch meshów równiez wydajność jest stosunkowo mniejsza.
+## Performance:
 
+- OpenMP parallelization significantly improves performance (CUDA acceleration has not yet been tested).
+- BVH structures greatly accelerate rendering, particularly for complex meshes.
+- Computational load increases dramatically with higher Max Depth settings. Rendering a scene at resolution 100×100 with a Max Depth of 3 may take minutes on an Intel 13900k.
+- Performance scales negatively with pixel coverage of meshes and total triangle count. Each mesh uses an independent BVH structure, meaning more meshes lead to decreased relative performance.
 
+---
 
-Ważniejsze klasy:
+## Main classes:
 
-RayTracer - główna klasa z obliczeniami związanymi z samym procesem renderowania
+- **`RayTracer`** – Primary rendering logic and raytracing calculations.
+- **`BVH` / `BVHNode` / `AABB`** – BVH structures for accelerating intersection tests. Work alongside `Mesh` and `Triangle` to detect ray intersections.
+- **`Mesh`** – Holds collections of `Triangle` objects, each defined by vertex positions (`glm::vec3`) and normals.
+- **`Ray`** – Simple class encapsulating ray origin and direction.
+- **`Camera`** – Manages the camera configuration, including `Eye` and `ScreenPlane`, which determine the initial ray emission setup.
+- **`Light`, `Material`** – Store relevant lighting and material parameters.
+- **`Scene` / `RenderSettings`** – Container classes for scene geometry, objects, and rendering parameters, providing easy centralized access to configurations.
 
-BVH / BVHNode / AABB - klasy odpowiedzialne za zarządzanie strukturami BVH. Razem z klasami Mesh i Triangle odnajdują intersekcje promieni
+---
 
-Mesh - zawiera wektor ze swomi obiektami Triangle, które z kolei posiadają swoje wierzchołki (w formacie glm::vec3) oraz ich normalne 
+## Window Management / GUI / Texture Rendering:
 
-Ray - prosta klasa, zawiera tylko operatory związane ze swoim origin i direction
+- **`MyTexture`** – Custom class for storing texture data as `[x,y]`, converted to a format compatible with OpenGL textures before rendering.
+- **`ApplicationManager`** – Central application manager invoking rendering and GUI functions (initialized in `main.cpp`).
+- **`GUIManager`** – Defines graphical interface, includes `onClickRender` (trigger rendering) and `updateSceneData` (apply GUI inputs to the scene).
+- **`OpenGLRenderer`** – Responsible for rendering textures on-screen.
+- **`Defaults`** – Stores default values and constants used throughout the program.
 
-Camera - tworzy i zawiera klasy Eye oraz ScreenPlane, służące do określania pierwotnego ustawienia promieni
+---
 
-Light, Material - jedynie przechowują swoje dane
+## Build Environment:
 
-Scene / RenderSettings - obie te klasy służą do przechowania innych klas lub zmiennych w celu łatwego zbiorczego dostępu do ustawień i przekazywania ich. Scena zawiera wszystkie obiekty które będą brać udział w renderowaniu i znajdą się w "renderowanym świecie"
-
-
-W kwestii zarządzania samym oknem / GUI / renderowaniem tekstury w oknie:
-
-MyTexture - zaimplementowany przeze mnie obiekt do prostego przechowywania danych tekstury w postaci [x,y]; pod koniec jest przekształcany do tablicy wejściowej w formacie akceptowanym przez opengl
-
-ApplicationManager - menedżer całej aplikacji, wywołuje pozostałe funkcje (sam jest wywoływany z main.cpp)
-
-GUIManager - definiuje całe GUI, posiada też dwie ważne funkcje czyli onClickRender (wywołuje proces renderowania) oraz updateSceneData (pobiera dane z pól tekstowych i aplikuje je do sceny)
-
-OpenGLRenderer - obsługuje proces wyświetlania tekstury na ekranie
-
-Defaults - przechowuje wiele domyślnych wartości
-
-
-
-Visual Studio 2022
-Użyte biblioteki:
-- glew
-- glfw
-- glm
-- wxwidgets (gui)
-- tiny_obj_loader
+- **IDE:** Visual Studio 2022
+- **Libraries used:**
+  - GLEW
+  - GLFW
+  - GLM
+  - wxWidgets (for GUI)
+  - tiny_obj_loader (for OBJ mesh loading)
